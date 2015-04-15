@@ -1,0 +1,22 @@
+{
+  "name": "impress-mysql-storage",
+  "description": "Impress MySQL storage",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/icons8/impress-mysql-storage"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^2.9.24",
+    "mysql": "^2.6.2"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "jshint index.js && node_modules/.bin/mocha"
+  },
+  "devDependencies": {
+    "jshint": "^2.4.1",
+    "mocha": "^2.2.4",
+    "should": "^4.6.5"
+  }
+}
