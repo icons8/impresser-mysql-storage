@@ -81,6 +81,23 @@ describe('impress-mysql-storage', function () {
 
   });
 
+  it('should return error if database not exists', function(done) {
+    var
+      storage = new Storage({
+        database: 'not_founded_database'
+      }),
+      obj = {
+        url: 'http://test'
+      };
+
+    storage.get(obj.url, function(err, result) {
+
+      should(err).not.empty;
+      done();
+
+    });
+
+  });
 
 
 });
