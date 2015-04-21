@@ -1,5 +1,6 @@
 var
   should = require('should'),
+  Promise = require('bluebird'),
   Storage = require('..')
   ;
 
@@ -97,6 +98,32 @@ describe('impress-mysql-storage', function () {
 
     });
 
+  });
+
+  it('should urls list work', function(done) {
+    var
+      storage = new Storage({
+        database: 'test'
+      }),
+      obj = {
+        url: 'http://test',
+        content: 'text-1'
+      },
+      obj2 = {
+        url: 'http://test2',
+        content: 'text-2'
+      };
+
+    Promise.all([storage.put(obj), storage.put(obj2)])
+      .then(function() {
+        return storage.urls();
+      })
+      .catch(done)
+      .then(function(urls) {
+        should(urls).containEql(obj.url);
+        should(urls).containEql(obj2.url);
+        done();
+      });
   });
 
 
