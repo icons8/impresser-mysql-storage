@@ -1,9 +1,9 @@
 {
-  "name": "impress-mysql-storage",
-  "description": "Impress MySQL storage",
+  "name": "impresser-mysql-storage",
+  "description": "Impresser MySQL storage",
   "version": "0.1.1",
   "repository": {
-    "url": "https://github.com/icons8/impress-mysql-storage"
+    "url": "https://github.com/icons8/impresser-mysql-storage"
   },
   "main": "index.js",
   "dependencies": {

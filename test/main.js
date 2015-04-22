@@ -4,7 +4,7 @@ var
   Storage = require('..')
   ;
 
-describe('impress-mysql-storage', function () {
+describe('impresser-mysql-storage', function () {
 
 
   it('should work', function(done) {
