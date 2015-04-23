@@ -1,7 +1,7 @@
 {
   "name": "impresser-mysql-storage",
   "description": "Impresser MySQL storage",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": {
     "url": "https://github.com/icons8/impresser-mysql-storage"
   },
