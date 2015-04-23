@@ -1,7 +1,8 @@
 var
   should = require('should'),
   Promise = require('bluebird'),
-  Storage = require('..')
+  Storage = require('..'),
+  Db = require('../lib/Db')
   ;
 
 describe('impresser-mysql-storage', function () {
@@ -82,6 +83,46 @@ describe('impresser-mysql-storage', function () {
 
   });
 
+  it('should work openedAt and createdAt', function(done) {
+    var
+      storage = new Storage({
+        database: 'test'
+      }),
+      obj = {
+        url: 'http://test',
+        content: 'text-1'
+      },
+      createdAt,
+      openedAt;
+
+    storage.put(obj, function(err) {
+      if (err) return done(err);
+
+      storage.get(obj.url, function(err, result) {
+        if (err) return done(err);
+
+        createdAt = result.createdAt;
+        openedAt = result.openedAt;
+
+        should(createdAt).ok;
+        should(openedAt).ok;
+        should(createdAt).not.equal(openedAt);
+        should(createdAt).equal(result.updatedAt);
+
+        storage.get(obj.url, function(err, result) {
+          if (err) return done(err);
+
+          should(result.createdAt).equal(createdAt);
+          should(result.createdAt).equal(result.updatedAt);
+          should(result.openedAt).ok;
+          should(result.openedAt).not.equal(openedAt);
+
+          storage._db.query('DROP TABLE ??', [storage._tablename]).asCallback(done);
+        });
+      });
+    });
+  });
+
   it('should return error if database not exists', function(done) {
     var
       storage = new Storage({
@@ -122,9 +163,75 @@ describe('impresser-mysql-storage', function () {
       .then(function(urls) {
         should(urls).containEql(obj.url);
         should(urls).containEql(obj2.url);
-        done();
+        storage._db.query('DROP TABLE ??', [storage._tablename]).asCallback(done);
       });
   });
 
+  it('should correct migration', function(done) {
+    var
+      promise,
+      storage,
+      db = new Db({
+        database: 'test'
+      }),
+      url1 = 'http://test',
+      url2 = 'http://test2';
+
+    promise = db.query('CREATE TABLE IF NOT EXISTS ?? ('
+      + '?? VARCHAR(255) NOT NULL,'
+      + '?? INTEGER,'
+      + '?? TEXT,'
+      + '?? LONGTEXT,'
+      + '?? TEXT,'
+      + '?? TEXT,'
+      + '?? TEXT,'
+      + '?? INTEGER,'
+      + '?? INTEGER,'
+      + '?? BIGINT,'
+      + '?? BIGINT,'
+      + 'PRIMARY KEY (??)'
+      + ') ENGINE=MyISAM DEFAULT CHARSET=utf8;',
+      [
+        'impresses',
+        'url',
+        'httpStatusCode',
+        'httpHeaders',
+        'content',
+        'errors',
+        'warnings',
+        'notices',
+        'executionTime',
+        'performTime',
+        'updatedAt',
+        'expiresAt',
+        'url'
+      ]
+    );
+    promise = promise.then(function() {
+      return db.query('INSERT INTO ?? (??) VALUES (?), (?);', [
+        'impresses',
+        'url',
+        url1,
+        url2
+      ]);
+    });
+
+    promise = promise.then(function() {
+      storage = new Storage({
+        database: 'test'
+      });
+      return storage.get(url2)
+        .then(function(page) {
+          should(page.url).equal(url2)
+        })
+    });
+
+    promise
+      .then(function() {
+        storage._db.query('DROP TABLE ??', [storage._tablename]).asCallback(done);
+      })
+      .catch(done);
+
+  });
 
 });
