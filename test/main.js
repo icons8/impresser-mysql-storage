@@ -83,6 +83,30 @@ describe('impresser-mysql-storage', function () {
 
   });
 
+  it('should work url case ignoring', function(done) {
+    var
+      storage = new Storage({
+        database: 'test'
+      }),
+      obj = {
+        url: 'http://TesT'
+      },
+      url = 'hTTp://tEst';
+
+    storage.put(obj, function(err) {
+      if (err) return done(err);
+
+      storage.get(url, function(err, result) {
+        if (err) return done(err);
+
+        should(result.url).equal(url.toLowerCase());
+
+        storage._db.query('DROP TABLE ??', [storage._tablename]).asCallback(done);
+      });
+    });
+
+  });
+
   it('should work openedAt and createdAt', function(done) {
     var
       storage = new Storage({
