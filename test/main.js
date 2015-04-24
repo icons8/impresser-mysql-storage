@@ -99,7 +99,7 @@ describe('impresser-mysql-storage', function () {
       storage.get(url, function(err, result) {
         if (err) return done(err);
 
-        should(result.url).equal(url.toLowerCase());
+        should(result.url).equal(obj.url);
 
         storage._db.query('DROP TABLE ??', [storage._tablename]).asCallback(done);
       });
